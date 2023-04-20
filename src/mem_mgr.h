@@ -19,8 +19,9 @@ typedef struct {
  *
  * @param stats when NULL link to memory, otherwise initialize new memory based
  *              on the parameters in stats
+ * @return _Bool true on success, otherwise false
  */
-void mmgr_init(mmgr_stats *stats);
+_Bool mmgr_init(mmgr_stats *stats);
 
 // get the stats (only for reading)
 const mmgr_stats *mmgr_g_stats();
