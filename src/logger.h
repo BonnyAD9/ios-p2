@@ -1,0 +1,37 @@
+// useful helpers for the second project
+
+#ifndef LOGGER_INCLUDED
+#define LOGGER_INCLUDED
+
+/**
+ * @brief
+ * Prints "error: " in red followed by the given message and newline to stderr.
+ *
+ * @param format the message to print
+ * @param ... additional arguments to the message
+ * @return int EXIT_FAILURE
+ */
+int eprintf(const char *format, ...);
+
+/**
+ * @brief Set the log file, called only once for all processes
+ *
+ * @param filename path to the log file
+ */
+void init_log_file(const char *filename);
+
+/**
+ * @brief writes message to the log file shared by multiple processes
+ *
+ * @param format message to write
+ * @param ...
+ */
+void log(const char *format, ...);
+
+/**
+ * @brief closes the shared log file opened by set_log_file
+ *
+ */
+void close_log_file();
+
+#endif // LOGGER_INCLUDED
