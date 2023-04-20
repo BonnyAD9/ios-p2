@@ -14,11 +14,12 @@
 int eprintf(const char *format, ...);
 
 /**
- * @brief Set the log file, called only once for all processes
+ * @brief Set the log file, called for every process
  *
  * @param filename path to the log file
+ * @return _Bool true on success, otherwise false
  */
-void init_log_file(const char *filename);
+_Bool init_log_file(const char *filename);
 
 /**
  * @brief writes message to the log file shared by multiple processes
