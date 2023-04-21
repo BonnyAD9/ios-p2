@@ -27,12 +27,12 @@ _Bool init_log_file(const char *filename);
  * @param format message to write
  * @param ...
  */
-void log(const char *format, ...);
+void flog(const char *format, ...);
 
 /**
  * @brief closes the shared log file opened by set_log_file
  *
  */
-void close_log_file();
+void close_log_file(void);
 
 #endif // LOGGER_INCLUDED

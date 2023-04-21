@@ -24,15 +24,6 @@ typedef struct {
  */
 _Bool mmgr_init(mmgr_stats *stats, _Bool init);
 
-// get the stats (only for reading)
-const mmgr_stats *mmgr_g_stats();
-
-// lock the log file and the counter
-size_t *mmgr_g_log_file();
-
-// unlock the log file and the counter
-void mmgr_r_log_file();
-
 /**
  * @brief closes the shared memory
  *
@@ -41,4 +32,13 @@ void mmgr_r_log_file();
  */
 void mmgr_close(_Bool clear);
 
-#endif MEM_MGR_INCLUDED
+// get the stats (only for reading)
+const mmgr_stats *mmgr_g_stats(void);
+
+// lock the log file and the counter
+size_t *mmgr_g_log_file(void);
+
+// unlock the log file and the counter
+void mmgr_r_log_file(void);
+
+#endif // MEM_MGR_INCLUDED

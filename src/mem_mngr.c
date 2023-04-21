@@ -19,7 +19,7 @@ typedef struct {
 
 static mmgr_memory *mem = NULL;
 
-_Bool _mmgr_init(mmgr_stats *stats, size_t mem_size);
+static _Bool _mmgr_init(mmgr_stats *stats, size_t mem_size);
 
 _Bool mmgr_init(mmgr_stats *stats, _Bool init) {
     // calculate the required space
@@ -61,7 +61,7 @@ _Bool mmgr_init(mmgr_stats *stats, _Bool init) {
 }
 
 // initializes the memory contents
-_Bool _mmgr_init(mmgr_stats *stats, size_t mem_size) {
+static _Bool _mmgr_init(mmgr_stats *stats, size_t mem_size) {
     // init the semaphores
     if (sem_init(&mem->log_file_cnt_sem, 1, 1) == -1)
         return 0;
@@ -70,6 +70,8 @@ _Bool _mmgr_init(mmgr_stats *stats, size_t mem_size) {
     mem->mem_size = mem_size;
     mem->stats = *stats;
     mem->log_file_cnt = 0;
+
+    return 1;
 }
 
 void mmgr_close(_Bool clear) {
@@ -84,15 +86,15 @@ void mmgr_close(_Bool clear) {
     shm_unlink(SH_MEM_NAME);
 }
 
-const mmgr_stats *mmgr_g_stats() {
+const mmgr_stats *mmgr_g_stats(void) {
     return &mem->stats;
 }
 
-size_t *mmgr_g_log_file() {
+size_t *mmgr_g_log_file(void) {
     sem_wait(&mem->log_file_cnt_sem);
     return &mem->log_file_cnt;
 }
 
-void mmgr_r_log_file() {
+void mmgr_r_log_file(void) {
     sem_post(&mem->log_file_cnt_sem);
 }

@@ -44,7 +44,7 @@ _Bool init_log_file(const char *filename) {
     return 1;
 }
 
-void log(const char *format, ...) {
+void flog(const char *format, ...) {
     assert(log_file);
 
     size_t *ctr = mmgr_g_log_file();
@@ -52,7 +52,7 @@ void log(const char *format, ...) {
     va_list val;
     va_start(val, format);
 
-    fprintf(log_file, "%zu: ");
+    fprintf(log_file, "%zu: ", *ctr);
     vfprintf(log_file, format, val);
     fprintf(log_file, "\n");
     // the logger expects that the contents are always flusshed
@@ -61,7 +61,7 @@ void log(const char *format, ...) {
     va_end(val);
 }
 
-void close_log_file() {
+void close_log_file(void) {
     if (log_file)
         fclose(log_file);
     log_file = NULL;
