@@ -3,8 +3,8 @@
 #include <unistd.h>   // fork
 #include <ctype.h>    // isspace
 
-#include "logger.h"  // eprintf, init_log_file
-#include "mem_mgr.h" // mmgr_init
+#include "logger.h"  // eprintf, init_log_file, close_log_file
+#include "mem_mgr.h" // mmgr_init, mmgr_close
 
 // inclusive
 #define TZ_MAX 10000
