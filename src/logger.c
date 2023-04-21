@@ -12,6 +12,7 @@
 
 #define RESET "\x1b[0m"
 #define RED "\x1b[91m"
+#define MAGENTA "\x1b[95m"
 
 #else // ifndef NO_COLOR
 
@@ -35,10 +36,21 @@ int eprintf(const char *format, ...) {
     return EXIT_FAILURE;
 }
 
+void wprintf(const char *format, ...) {
+    va_list val;
+    va_start(val, format);
+
+    fprintf(stderr, MAGENTA "warning:" RESET " ");
+    vfprintf(stderr, format, val);
+    fprintf(stderr, "\n");
+
+    va_end(val);
+}
+
 _Bool init_log_file(const char *filename) {
     if (log_file)
         fclose(log_file);
-    log_file = fopen(filename, "a");
+    log_file = fopen(filename, "w");
     if (!log_file)
         return 0;
     return 1;
@@ -59,6 +71,8 @@ void flog(const char *format, ...) {
     fflush(log_file);
 
     va_end(val);
+
+    ++*ctr;
 
     mmgr_r_log_file();
 }

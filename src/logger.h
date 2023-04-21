@@ -14,6 +14,16 @@
 int eprintf(const char *format, ...);
 
 /**
+ * @brief
+ * Prints "warning: " in magenta followed by the given message and newline to
+ * stderr.
+ *
+ * @param format the message to print
+ * @param ... additional arguments to the message
+ */
+void wprintf(const char *format, ...);
+
+/**
  * @brief Set the log file, called for every process
  *
  * @param filename path to the log file

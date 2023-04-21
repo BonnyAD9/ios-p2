@@ -1,4 +1,4 @@
-#include "mem_mgr.h" // mgr_stats, size_t
+#include "mem_mgr.h" // mgr_stats, size_t, pid_t
 
 #include <semaphore.h> // sem_t, sem_init
 #include <sys/mman.h>  // shm_open, PROT_READ, PROT_WRITE, MAP_SHARED,
@@ -20,8 +20,8 @@ typedef struct {
 } mmgr_memory;
 
 static mmgr_memory *mem = NULL;
-static int *customer_pids = NULL;
-static int *clerk_pids = NULL;
+static pid_t *customer_pids = NULL;
+static pid_t *clerk_pids = NULL;
 
 static _Bool _mmgr_init(mmgr_stats *stats, size_t mem_size);
 
@@ -33,9 +33,9 @@ _Bool mmgr_init(mmgr_stats *stats, _Bool init) {
     size_t size = sizeof(mmgr_memory);
 
     size_t customer_pids_offset = size;
-    size += stats->nz * sizeof(int);
+    size += stats->nz * sizeof(*customer_pids);
     size_t clerk_pids_offset = size;
-    size += stats->nu * sizeof(int);
+    size += stats->nu * sizeof(*clerk_pids);
 
     int oflags = O_RDWR;
     if (init)

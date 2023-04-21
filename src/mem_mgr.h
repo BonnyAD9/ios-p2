@@ -3,7 +3,8 @@
 #ifndef MEM_MGR_INCLUDED
 #define MEM_MGR_INCLUDED
 
-#include <stdio.h> // size_t, FILE
+#include <stdio.h>     // size_t, FILE
+#include <sys/types.h> // pid_t
 
 // contains the basic information shared between processes
 typedef struct {
@@ -16,7 +17,7 @@ typedef struct {
 
 typedef struct {
     size_t *len;
-    int *data;
+    pid_t *data;
 } mmgr_array;
 
 /**
