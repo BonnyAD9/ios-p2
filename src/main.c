@@ -1,6 +1,7 @@
 #include <inttypes.h> // SIZE_MAX, size_t
 #include <stdlib.h>   // strtol
 #include <unistd.h>   // fork
+#include <ctype.h>    // isspace
 
 #include "logger.h"  // eprintf, init_log_file
 #include "mem_mgr.h" // mmgr_init
@@ -42,18 +43,26 @@ int main(int argc, char **argv) {
         return eprintf("Invalid value for argument F");
 
     // init shared resources
-    mmgr_init(&stats, 1);
-    init_log_file(LOG_FILENAME);
+    if (!mmgr_init(&stats, 1)) {
+        return eprintf("Failed to create shared memory");
+    }
+    if (!init_log_file(LOG_FILENAME)) {
+        mmgr_close(1);
+        return eprintf("Failed to create log file");
+    }
 
     // fork customers
     for (size_t i = 0; i < stats.nz; ++i) {
         // TODO: fork
     }
+
+    close_log_file();
+    mmgr_close(1);
 }
 
 static _Bool parse_num(const char *str, size_t min, size_t max, size_t *out) {
     // check for empty string or negative value
-    if (!*str || *str == '-')
+    if (!*str || *str == '-' || isspace(*str))
         return 0;
 
     char *end;

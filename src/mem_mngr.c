@@ -95,13 +95,16 @@ static _Bool _mmgr_init(mmgr_stats *stats, size_t mem_size) {
 
 void mmgr_close(_Bool clear) {
     if (!clear) {
-        munmap(mem, mem->mem_size);
+        if (mem)
+            munmap(mem, mem->mem_size);
         return;
     }
 
-    sem_close(&mem->log_file_cnt_sem);
+    if (mem) {
+        sem_close(&mem->log_file_cnt_sem);
+        munmap(mem, mem->mem_size);
+    }
 
-    munmap(mem, mem->mem_size);
     shm_unlink(SH_MEM_NAME);
 }
 
