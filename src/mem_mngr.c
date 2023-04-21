@@ -14,6 +14,7 @@ typedef struct {
     size_t mem_size;
     mmgr_stats stats;
     sem_t log_file_cnt_sem;
+    sem_t stderr_print;
     size_t log_file_cnt;
 } mmgr_memory;
 
@@ -69,6 +70,10 @@ static _Bool _mmgr_init(mmgr_stats *stats, size_t mem_size) {
     // init the semaphores
     if (sem_init(&mem->log_file_cnt_sem, 1, 1) == -1)
         return 0;
+    if (sem_init(&mem->stderr_print, 1, 1) == -1) {
+        sem_close(&mem->log_file_cnt_sem);
+        return 0;
+    }
 
     // set the default values
     mem->mem_size = mem_size;
@@ -90,7 +95,13 @@ void mmgr_close(_Bool clear) {
         munmap(mem, mem->mem_size);
     }
 
+    mem = NULL;
+
     shm_unlink(SH_MEM_NAME);
+}
+
+_Bool mmgr_is_init(void) {
+    return mem;
 }
 
 const mmgr_stats *mmgr_g_stats(void) {
@@ -104,4 +115,12 @@ size_t *mmgr_g_log_file(void) {
 
 void mmgr_r_log_file(void) {
     sem_post(&mem->log_file_cnt_sem);
+}
+
+void mmgr_g_stderr(void) {
+    sem_wait(&mem->stderr_print);
+}
+
+void mmgr_r_stderr(void) {
+    sem_post(&mem->stderr_print);
 }

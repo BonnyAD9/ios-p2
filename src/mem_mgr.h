@@ -38,6 +38,9 @@ _Bool mmgr_init(mmgr_stats *stats, _Bool init);
  */
 void mmgr_close(_Bool clear);
 
+// returns true if the memory is initialized.
+_Bool mmgr_is_init(void);
+
 // get the stats (only for reading)
 const mmgr_stats *mmgr_g_stats(void);
 
@@ -46,5 +49,11 @@ size_t *mmgr_g_log_file(void);
 
 // unlock the log file and the counter
 void mmgr_r_log_file(void);
+
+// lock the stderr
+void mmgr_g_stderr(void);
+
+// unlock the stderr
+void mmgr_r_stderr(void);
 
 #endif // MEM_MGR_INCLUDED

@@ -5,7 +5,8 @@
 
 /**
  * @brief
- * Prints "error: " in red followed by the given message and newline to stderr.
+ * synchronously prints "error: " in red followed by the given message and
+ * newline to stderr.
  *
  * @param format the message to print
  * @param ... additional arguments to the message
@@ -15,8 +16,8 @@ int eprintf(const char *format, ...);
 
 /**
  * @brief
- * Prints "warning: " in magenta followed by the given message and newline to
- * stderr.
+ * synchronously prints "warning: " in magenta followed by the given message
+ * and newline to stderr.
  *
  * @param format the message to print
  * @param ... additional arguments to the message

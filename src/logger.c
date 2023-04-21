@@ -24,6 +24,9 @@
 static FILE *log_file = NULL;
 
 int eprintf(const char *format, ...) {
+    if (mmgr_is_init())
+        mmgr_g_stderr();
+
     va_list val;
     va_start(val, format);
 
@@ -33,10 +36,16 @@ int eprintf(const char *format, ...) {
 
     va_end(val);
 
+    if (mmgr_is_init())
+        mmgr_r_stderr();
+
     return EXIT_FAILURE;
 }
 
 void wprintf(const char *format, ...) {
+    if (mmgr_is_init())
+        mmgr_g_stderr();
+
     va_list val;
     va_start(val, format);
 
@@ -45,6 +54,9 @@ void wprintf(const char *format, ...) {
     fprintf(stderr, "\n");
 
     va_end(val);
+
+    if (mmgr_is_init())
+        mmgr_r_stderr();
 }
 
 _Bool init_log_file(const char *filename) {
