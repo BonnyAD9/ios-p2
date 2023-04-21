@@ -47,10 +47,4 @@ size_t *mmgr_g_log_file(void);
 // unlock the log file and the counter
 void mmgr_r_log_file(void);
 
-// lock and get the customer pids should be used only by the main process
-mmgr_array mmgr_g_customer_pids(void);
-
-// lock and get the customer pids should be used only by the main process
-mmgr_array mmgr_g_clerk_pids(void);
-
 #endif // MEM_MGR_INCLUDED

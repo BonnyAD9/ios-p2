@@ -61,8 +61,6 @@ int main(int argc, char **argv) {
         return eprintf("Failed to create log file");
     }
 
-    mmgr_array customer_pids = mmgr_g_customer_pids();
-
     // fork customers
     for (size_t i = 0; i < stats.nz; ++i) {
         pid_t pid = fork();
@@ -73,12 +71,7 @@ int main(int argc, char **argv) {
             eprintf("Failed to create customer with id %zu", i + 1);
             goto on_fail;
         }
-
-        customer_pids.data[i] = pid;
-        ++*customer_pids.len;
     }
-
-    mmgr_array clerk_pids = mmgr_g_customer_pids();
 
     // fork clerks
     for (size_t i = 0; i < stats.nu; ++i) {
@@ -90,9 +83,6 @@ int main(int argc, char **argv) {
             eprintf("Failed to create clerk with id %zu", i + 1);
             goto on_fail;
         }
-
-        clerk_pids.data[i] = pid;
-        ++*clerk_pids.len;
     }
 
     // 1 if any returned failure, otherwise 0
