@@ -14,16 +14,28 @@ typedef struct {
     size_t mem_size;
     mmgr_stats stats;
     sem_t log_file_cnt_sem;
+    size_t customer_pid_len;
+    size_t clerk_pid_len;
     size_t log_file_cnt;
 } mmgr_memory;
 
 static mmgr_memory *mem = NULL;
+static int *customer_pids = NULL;
+static int *clerk_pids = NULL;
 
 static _Bool _mmgr_init(mmgr_stats *stats, size_t mem_size);
 
 _Bool mmgr_init(mmgr_stats *stats, _Bool init) {
-    // calculate the required space
+    if (mem)
+        return 1;
+
+    // calculate the required space and offsets
     size_t size = sizeof(mmgr_memory);
+
+    size_t customer_pids_offset = size;
+    size += stats->nz * sizeof(int);
+    size_t clerk_pids_offset = size;
+    size += stats->nu * sizeof(int);
 
     int oflags = O_RDWR;
     if (init)
@@ -45,10 +57,15 @@ _Bool mmgr_init(mmgr_stats *stats, _Bool init) {
     mem = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
     close(fd);
     if (mem == MAP_FAILED) {
+        mem = NULL;
         if (init)
             shm_unlink(SH_MEM_NAME);
         return 0;
     }
+
+    // get the memory locations
+    customer_pids = (int *)((char *)mem + customer_pids_offset);
+    clerk_pids = (int *)((char *)mem + clerk_pids_offset);
 
     // initialize the memory contents on the firs init
     if (init && !_mmgr_init(stats, size)) {
@@ -68,6 +85,8 @@ static _Bool _mmgr_init(mmgr_stats *stats, size_t mem_size) {
 
     // set the default values
     mem->mem_size = mem_size;
+    mem->customer_pid_len = 0;
+    mem->clerk_pid_len = 0;
     mem->stats = *stats;
     mem->log_file_cnt = 0;
 
@@ -97,4 +116,15 @@ size_t *mmgr_g_log_file(void) {
 
 void mmgr_r_log_file(void) {
     sem_post(&mem->log_file_cnt_sem);
+}
+
+mmgr_array mmgr_g_customer_pids(void) {
+    return (mmgr_array) {
+        .data = customer_pids,
+        .len = &mem->customer_pid_len
+    };
+}
+
+mmgr_array mmgr_g_clerk_pids(void) {
+    return (mmgr_array) { .data = clerk_pids, .len = &mem->clerk_pid_len };
 }

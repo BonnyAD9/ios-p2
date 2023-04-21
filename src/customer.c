@@ -3,5 +3,6 @@
 #include <stdlib.h>   // EXIT_SUCCESS
 
 int customer_main(size_t id) {
+    (void)id;
     return EXIT_SUCCESS;
 }

@@ -42,11 +42,11 @@ int main(int argc, char **argv) {
         return eprintf("Invalid value for argument F");
 
     // init shared resources
-    mmgr_init(&stats, 1); // TODO: add PID arrays
+    mmgr_init(&stats, 1);
     init_log_file(LOG_FILENAME);
 
     // fork customers
-    for (int i = 0; i < stats.nz; ++i) {
+    for (size_t i = 0; i < stats.nz; ++i) {
         // TODO: fork
     }
 }
