@@ -59,6 +59,8 @@ void flog(const char *format, ...) {
     fflush(log_file);
 
     va_end(val);
+
+    mmgr_r_log_file();
 }
 
 void close_log_file(void) {
