@@ -57,8 +57,9 @@ static _Bool parse_num(const char *str, size_t min, size_t max, size_t *out) {
         return 0;
 
     char *end;
-    *out = strtoul(str, &end, 10);
+    unsigned long long num = strtoull(str, &end, 10);
+    *out = num;
 
     // check if the whole string was consumed and the value is in bounds
-    return *end == 0 && *out >= min && *out <= max;
+    return *end == 0 && num >= min && num <= max;
 }
