@@ -1,12 +1,16 @@
 #include <inttypes.h> // SIZE_MAX, size_t
 #include <stdlib.h>   // strtol
+#include <unistd.h>   // fork
 
-#include "logger.h" // eprintf
+#include "logger.h"  // eprintf, init_log_file
+#include "mem_mgr.h" // mmgr_init
 
 // inclusive
 #define TZ_MAX 10000
 #define TU_MAX 100
 #define  F_MAX 10000
+
+#define LOG_FILENAME "proj2.out"
 
 /**
  * @brief Converts the string to positive number.
@@ -23,23 +27,28 @@ int main(int argc, char **argv) {
     if (argc != 6)
         return eprintf("invalid number of arguments");
 
-    size_t nz;
-    size_t nu;
-    size_t tz;
-    size_t tu;
-    size_t f ;
+    mmgr_stats stats;
 
     // process arguments
-    if (!parse_num(argv[1], 1, SIZE_MAX, &nz))
+    if (!parse_num(argv[1], 1, SIZE_MAX - 1, &stats.nz))
         return eprintf("Invalid value for argument NZ");
-    if (!parse_num(argv[2], 1, SIZE_MAX, &nu))
+    if (!parse_num(argv[2], 1, SIZE_MAX - 1, &stats.nu))
         return eprintf("Invalid value for argument NU");
-    if (!parse_num(argv[3], 0, TZ_MAX, &tz))
+    if (!parse_num(argv[3], 0, TZ_MAX, &stats.tz))
         return eprintf("Invalid value for argument TZ");
-    if (!parse_num(argv[4], 0, TU_MAX, &tu))
+    if (!parse_num(argv[4], 0, TU_MAX, &stats.tu))
         return eprintf("Invalid value for argument TU");
-    if (!parse_num(argv[5], 0, F_MAX, &f))
+    if (!parse_num(argv[5], 0, F_MAX, &stats.f))
         return eprintf("Invalid value for argument F");
+
+    // init shared resources
+    mmgr_init(&stats, 1); // TODO: add PID arrays
+    init_log_file(LOG_FILENAME);
+
+    // fork customers
+    for (int i = 0; i < stats.nz; ++i) {
+        // TODO: fork
+    }
 }
 
 static _Bool parse_num(const char *str, size_t min, size_t max, size_t *out) {
