@@ -1,8 +1,9 @@
 #include <inttypes.h>  // SIZE_MAX, size_t
-#include <stdlib.h>    // strtol, EXIT_FAILURE, EXIT_SUCCESS
-#include <unistd.h>    // fork
+#include <stdlib.h>    // strtol, EXIT_FAILURE, EXIT_SUCCESS, srand, rand
+#include <unistd.h>    // fork, usleep
 #include <ctype.h>     // isspace
 #include <sys/wait.h>  // wait, WIFEXITED, WEXITSTATUS
+#include <time.h>      // time
 
 #include "logger.h"   // eprintf, init_log_file, close_log_file, wprintf
 #include "mem_mgr.h"  // mmgr_init, mmgr_close, pid_t
@@ -52,6 +53,11 @@ int main(int argc, char **argv) {
     if (!parse_num(argv[5], 0, F_MAX, &stats.f))
         return eprintf("Invalid value for argument F");
 
+    // convert to microseconds
+    stats.tz *= 1000;
+    stats.tu *= 1000;
+    stats.f  *= 1000;
+
     // init shared resources
     if (!mmgr_init(&stats, 1)) {
         return eprintf("Failed to create shared memory");
@@ -84,6 +90,15 @@ int main(int argc, char **argv) {
             goto on_fail;
         }
     }
+
+    // sleep for (F/2 - F)
+    srand(time(NULL) + 23);
+    const size_t fo2 = stats.f / 2;
+    usleep(rand() % fo2 + fo2);
+
+    // close the bank
+    mmgr_s_close();
+    flog("closing");
 
     // 1 if any returned failure, otherwise 0
     int ret = (_Bool)wait4all_childern();

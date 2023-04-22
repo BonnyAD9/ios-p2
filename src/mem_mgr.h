@@ -56,4 +56,10 @@ void mmgr_g_stderr(void);
 // unlock the stderr
 void mmgr_r_stderr(void);
 
+// get value indicating whether the bank is closed
+_Bool mmgr_g_closed(void);
+
+// close the bank
+void mmgr_s_close(void);
+
 #endif // MEM_MGR_INCLUDED

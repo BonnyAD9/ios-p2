@@ -6,16 +6,22 @@
 #include <fcntl.h>     // O_RDWR, O_CREAT, O_EXCL
 #include <sys/stat.h>  // S_IRUSR, S_IWUSR
 #include <unistd.h>    // ftruncate, close
+#include <signal.h>    // sig_atomic_t
 
 #define SH_MEM_NAME "/ios-p2"
 
 // all the things in the shared memory
 typedef struct {
+    // basic data
     size_t mem_size;
     mmgr_stats stats;
+    // semaphores
     sem_t log_file_cnt_sem;
     sem_t stderr_print;
+    // data
     size_t log_file_cnt;
+    // atomic data
+    sig_atomic_t closed;
 } mmgr_memory;
 
 static mmgr_memory *mem = NULL;
@@ -79,6 +85,7 @@ static _Bool _mmgr_init(mmgr_stats *stats, size_t mem_size) {
     mem->mem_size = mem_size;
     mem->stats = *stats;
     mem->log_file_cnt = 0;
+    mem->closed = 0;
 
     return 1;
 }
@@ -123,4 +130,14 @@ void mmgr_g_stderr(void) {
 
 void mmgr_r_stderr(void) {
     sem_post(&mem->stderr_print);
+}
+
+// get value indicating whether the bank is closed
+_Bool mmgr_g_closed(void) {
+    return mem->closed;
+}
+
+// close the bank
+void mmgr_s_close(void) {
+    mem->closed = 1;
 }
