@@ -3,6 +3,6 @@
 
 #include <stddef.h> // size_t
 
-int clerk_main(size_t id);
+int clerk_main(const size_t id);
 
 #endif // CLERK_INCLUDED

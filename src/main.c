@@ -36,6 +36,10 @@ static _Bool parse_num(const char *str, size_t min, size_t max, size_t *out);
 static size_t wait4all_childern(void);
 
 int main(int argc, char **argv) {
+    // in case the process crashes this can be used to free the shared memory
+    if (argc == 1) {
+        mmgr_close(1);
+    }
     if (argc != 6)
         return eprintf("invalid number of arguments");
 

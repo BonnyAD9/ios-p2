@@ -10,7 +10,7 @@
 
 #include "logger.h"  // flog
 #include "mem_mgr.h" // mmgr_g_stats, mmgr_g_queue, mmgr_queue, mmq_push,
-                     // mmgr_r_queue
+                     // mmgr_r_queue, Q_COUNT
 
 int customer_main(const size_t id) {
     // make unique seed
@@ -31,7 +31,7 @@ int customer_main(const size_t id) {
     }
 
     // 4)
-    const int x = rand() % 3 + 1;
+    const int x = rand() % Q_COUNT + 1;
 
     // 4.1)
     flog("Z %zu: entering office for a service %d", id, x);

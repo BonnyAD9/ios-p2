@@ -69,7 +69,7 @@ _Bool mmgr_init(mmgr_stats *stats, _Bool init) {
     // get variable array positions
     char *moff = (char *)mem + sizeof(*mem);
     for (size_t i = 0; i < Q_COUNT; ++i) {
-        q_data[i] = moff;
+        q_data[i] = (pid_t *)moff;
         moff += q_size;
     }
 
@@ -177,7 +177,7 @@ void mmgr_s_close(void) {
 mmgr_queue mmgr_g_queue(int id) {
     --id;
     if (id < 0 || id >= Q_COUNT)
-        return (mmgr_queue) { NULL };
+        return (mmgr_queue) { .data = NULL, .fields = NULL };
 
     sem_wait(&mem->q_sem[id]);
     return (mmgr_queue) { .data = q_data[id], .fields = &mem->q_fields[id] };
@@ -190,4 +190,5 @@ _Bool mmgr_r_queue(int id) {
         return 0;
 
     sem_post(&mem->q_sem[id]);
+    return 1;
 }
