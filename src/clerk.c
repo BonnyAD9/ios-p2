@@ -28,7 +28,7 @@ int clerk_main(const size_t id) {
             if (customer)
                 break;
             mmgr_r_queue(x);
-            x = (x + 1) % Q_COUNT;
+            x = x % Q_COUNT + 1;
         }
 
         if (i == Q_COUNT) {
@@ -53,6 +53,8 @@ int clerk_main(const size_t id) {
             // 3.4)
             continue;
         }
+
+        mmgr_r_queue(x);
 
         // 2.1)
         flog("U %zu: serving a service of type %d", id, x);
