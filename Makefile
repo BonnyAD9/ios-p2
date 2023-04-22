@@ -32,4 +32,4 @@ clean:
 	-rm obj/debug/*.o $(TARGET) dep.d
 
 submit:
-	zip $(SUBNAME).zip src/*
+	zip $(SUBNAME).zip Makefile src/*
