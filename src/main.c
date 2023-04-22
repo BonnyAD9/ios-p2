@@ -1,5 +1,5 @@
 #include <inttypes.h>  // SIZE_MAX, size_t
-#include <stdlib.h>    // strtol, EXIT_FAILURE, EXIT_SUCCESS, srand, rand
+#include <stdlib.h>    // strtol, EXIT_FAILURE, EXIT_SUCCESS, srand, rand, NULL
 #include <unistd.h>    // fork, usleep
 #include <ctype.h>     // isspace
 #include <sys/wait.h>  // wait, WIFEXITED, WEXITSTATUS

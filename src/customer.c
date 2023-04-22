@@ -1,8 +1,8 @@
-#include "customer.h" // size_t
+#include "customer.h" // size_t, NULL
 
 #include <stdlib.h>  // EXIT_SUCCESS
 #include <unistd.h>  // usleep, getpid
-#include <stdlib.h>  // srand, rand, NULL
+#include <stdlib.h>  // srand, rand
 #include <time.h>    // time
 #include <signal.h>  // sigset_t, sigemptyset, sigaddset, SIGUSR1, SIG_BLOCK,
                      // sigwait

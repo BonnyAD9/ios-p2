@@ -1,6 +1,6 @@
 #include "logger.h"
 
-#include <stdarg.h> // va_list, va_start, va_end
+#include <stdarg.h> // va_list, va_start, va_end, NULL
 #include <stdio.h>  // vfprintf, stderr, FILE
 #include <stdlib.h> // EXIT_FAILURE
 #include <assert.h> // assert

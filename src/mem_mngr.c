@@ -1,4 +1,4 @@
-#include "mem_mgr.h" // mgr_stats, size_t, pid_t
+#include "mem_mgr.h" // mgr_stats, size_t, pid_t, NULL
 
 #include <semaphore.h> // sem_t, sem_init
 #include <sys/mman.h>  // shm_open, PROT_READ, PROT_WRITE, MAP_SHARED,
