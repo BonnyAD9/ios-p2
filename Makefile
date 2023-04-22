@@ -19,8 +19,8 @@ DOBJ:=$(patsubst src/%.c, obj/debug/%.o, $(SRC))
 
 debug:
 	mkdir -p obj/debug
-	clang -MM $(SRC) | sed -r 's/^.*$$/obj\/debug\/\0/' > dep.d
-	make deb
+	clang -MM $(SRC) | sed -r 's/^.*:.*$$/obj\/debug\/\0/' > dep.d
+	$(MAKE) deb
 
 deb: $(DOBJ)
 	$(CC) $(CFLAGS) $^ -o $(TARGET) $(LDFLAGS)
