@@ -8,7 +8,7 @@
 #include <unistd.h>    // ftruncate, close
 #include <signal.h>    // sig_atomic_t
 
-#define SH_MEM_NAME "/ios-p2"
+#define SH_MEM_NAME "/ios-p2-xstigl00"
 
 // all the things in the shared memory
 typedef struct {
