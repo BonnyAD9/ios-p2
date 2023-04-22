@@ -18,13 +18,16 @@ typedef struct {
     // semaphores
     sem_t log_file_cnt_sem;
     sem_t stderr_print;
+    sem_t q_sem[Q_COUNT];
     // data
     size_t log_file_cnt;
+    mmq_fields q_fields[Q_COUNT];
     // atomic data
     sig_atomic_t closed;
 } mmgr_memory;
 
-static mmgr_memory *mem = NULL;
+static mmgr_memory *mem;
+static pid_t *q_data[Q_COUNT];
 
 static _Bool _mmgr_init(mmgr_stats *stats, size_t mem_size);
 
@@ -34,6 +37,8 @@ _Bool mmgr_init(mmgr_stats *stats, _Bool init) {
 
     // calculate the required space and offsets
     size_t size = sizeof(mmgr_memory);
+    size_t q_size = mmq_predict_data_size(stats->nz);
+    size += q_size * Q_COUNT;
 
     int oflags = O_RDWR;
     if (init)
@@ -61,6 +66,13 @@ _Bool mmgr_init(mmgr_stats *stats, _Bool init) {
         return 0;
     }
 
+    // get variable array positions
+    char *moff = (char *)mem + sizeof(*mem);
+    for (size_t i = 0; i < Q_COUNT; ++i) {
+        q_data[i] = moff;
+        moff += q_size;
+    }
+
     // initialize the memory contents on the firs init
     if (init && !_mmgr_init(stats, size)) {
         munmap(mem, size);
@@ -75,19 +87,38 @@ _Bool mmgr_init(mmgr_stats *stats, _Bool init) {
 static _Bool _mmgr_init(mmgr_stats *stats, size_t mem_size) {
     // init the semaphores
     if (sem_init(&mem->log_file_cnt_sem, 1, 1) == -1)
-        return 0;
-    if (sem_init(&mem->stderr_print, 1, 1) == -1) {
-        sem_close(&mem->log_file_cnt_sem);
-        return 0;
+        goto on_file_cnt_fail;
+    if (sem_init(&mem->stderr_print, 1, 1) == -1)
+        goto on_stderr_print_fail;
+    size_t i;
+    for (i = 0; i < Q_COUNT; ++i) {
+        if (sem_init(&mem->q_sem[i], 1, 1) == -1)
+            goto on_q_sem_fail;
     }
 
     // set the default values
     mem->mem_size = mem_size;
     mem->stats = *stats;
+
     mem->log_file_cnt = 0;
+
+    for (i = 0; i < Q_COUNT; ++i) {
+        mmq_init(&mem->q_fields[i], stats->nz);
+    }
+
     mem->closed = 0;
 
     return 1;
+    // free the allocated resources on failure
+on_q_sem_fail:
+    for (size_t j = 0; j < i; ++j) {
+        sem_close(&mem->q_sem[j]);
+    }
+    sem_close(&mem->stderr_print);
+on_stderr_print_fail:
+    sem_close(&mem->log_file_cnt_sem);
+on_file_cnt_fail:
+    return 0;
 }
 
 void mmgr_close(_Bool clear) {
@@ -140,4 +171,23 @@ _Bool mmgr_g_closed(void) {
 // close the bank
 void mmgr_s_close(void) {
     mem->closed = 1;
+}
+
+// locks queue with the given id, returns invalid queue if the ID is invalid
+mmgr_queue mmgr_g_queue(int id) {
+    --id;
+    if (id < 0 || id >= Q_COUNT)
+        return (mmgr_queue) { NULL };
+
+    sem_wait(&mem->q_sem[id]);
+    return (mmgr_queue) { .data = q_data[id], .fields = &mem->q_fields[id] };
+}
+
+// unlocks queue with the given id, returns false if the id is invalid
+_Bool mmgr_r_queue(int id) {
+    --id;
+    if (id < 0 || id >= Q_COUNT)
+        return 0;
+
+    sem_post(&mem->q_sem[id]);
 }

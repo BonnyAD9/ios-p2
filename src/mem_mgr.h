@@ -6,6 +6,11 @@
 #include <stdio.h>     // size_t, FILE
 #include <sys/types.h> // pid_t
 
+#include "mmgr_queue.h" // mmgr_queue
+
+// number of queues
+#define Q_COUNT 3
+
 // contains the basic information shared between processes
 typedef struct {
     size_t nz;
@@ -14,11 +19,6 @@ typedef struct {
     size_t tu;
     size_t f ;
 } mmgr_stats;
-
-typedef struct {
-    size_t *len;
-    pid_t *data;
-} mmgr_array;
 
 /**
  * @brief initializes shared memory
@@ -61,5 +61,11 @@ _Bool mmgr_g_closed(void);
 
 // close the bank
 void mmgr_s_close(void);
+
+// locks queue with the given id, returns invalid queue if the ID is invalid
+mmgr_queue mmgr_g_queue(int id);
+
+// unlocks queue with the given id, returns false if the id is invalid
+_Bool mmgr_r_queue(int id);
 
 #endif // MEM_MGR_INCLUDED

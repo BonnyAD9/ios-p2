@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${default}"
+            ],
+            "defines": [
+                "_POSIX_C_SOURCE"
+            ]
+        }
+    ],
+    "version": 4
+}

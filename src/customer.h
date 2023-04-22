@@ -3,6 +3,6 @@
 
 #include <stddef.h> // size_t
 
-int customer_main(size_t id);
+int customer_main(const size_t id);
 
 #endif // CUSTOMER_INCLUDED
