@@ -48,7 +48,7 @@ int clerk_main(const size_t id) {
             usleep(rand() % mmgr_g_stats()->tu);
 
             // 3.3)
-            flog("U %zu: brake finished", id);
+            flog("U %zu: break finished", id);
 
             // 3.4)
             continue;
