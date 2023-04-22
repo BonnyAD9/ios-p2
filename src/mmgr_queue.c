@@ -1,4 +1,4 @@
-#include "mmgr_queue.h" // size_t, pid_t
+#include "mmgr_queue.h" // size_t, pid_t, mmq_fields, mmgr_queue
 
 // gets the required data size for the given count
 size_t mmq_predict_data_size(size_t count) {
