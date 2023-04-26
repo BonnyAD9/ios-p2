@@ -112,11 +112,11 @@ static _Bool _mmgr_init(mmgr_stats *stats, size_t mem_size) {
     // free the allocated resources on failure
 on_q_sem_fail:
     for (size_t j = 0; j < i; ++j) {
-        sem_close(&mem->q_sem[j]);
+        sem_destroy(&mem->q_sem[j]);
     }
-    sem_close(&mem->stderr_print);
+    sem_destroy(&mem->stderr_print);
 on_stderr_print_fail:
-    sem_close(&mem->log_file_cnt_sem);
+    sem_destroy(&mem->log_file_cnt_sem);
 on_file_cnt_fail:
     return 0;
 }
@@ -129,7 +129,7 @@ void mmgr_close(_Bool clear) {
     }
 
     if (mem) {
-        sem_close(&mem->log_file_cnt_sem);
+        sem_destroy(&mem->log_file_cnt_sem);
         munmap(mem, mem->mem_size);
     }
 
