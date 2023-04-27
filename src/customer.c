@@ -5,7 +5,7 @@
 #include <stdlib.h>  // srand, rand
 #include <time.h>    // time
 #include <signal.h>  // sigset_t, sigemptyset, sigaddset, SIGUSR1, SIG_BLOCK,
-                     // sigwait
+                     // sigwait, SIGUSR2
 #include <pthread.h> // pthread_sigmask
 
 #include "logger.h"  // flog
@@ -42,6 +42,7 @@ int customer_main(const size_t id) {
     sigset_t sset;
     sigemptyset(&sset);
     sigaddset(&sset, SIGUSR1);
+    sigaddset(&sset, SIGUSR2);
     pthread_sigmask(SIG_BLOCK, &sset, NULL);
 
     mmgr_queue q = mmgr_g_queue(x);
@@ -50,6 +51,12 @@ int customer_main(const size_t id) {
 
     int sig;
     sigwait(&sset, &sig);
+
+    // there are no clerks
+    if (sig == SIGUSR2) {
+        flog("Z %zu: going home", id);
+        return EXIT_SUCCESS;
+    }
 
     // 4.3)
     flog("Z %zu: called by office worker", id);

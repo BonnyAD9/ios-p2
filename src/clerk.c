@@ -8,9 +8,10 @@
 
 #include "logger.h"  // flog
 #include "mem_mgr.h" // mmgr_g_stats, Q_COUNT, pid_t, mmgr_queue, mmgr_g_queue,
-                     // mmq_pop, mmgr_g_closed
+                     // mmq_pop, mmgr_g_closed, mmgr_a_active_clerks
 
 int clerk_main(const size_t id) {
+    ++*mmgr_a_active_clerks();
     // make unique seed
     srand(time(NULL) * id + 11);
 
@@ -38,6 +39,7 @@ int clerk_main(const size_t id) {
                 flog("U %zu: going home", id);
 
                 // 4.2)
+                --*mmgr_a_active_clerks();
                 return EXIT_SUCCESS;
             }
 

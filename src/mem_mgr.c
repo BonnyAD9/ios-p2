@@ -1,4 +1,4 @@
-#include "mem_mgr.h" // mgr_stats, size_t, pid_t, NULL
+#include "mem_mgr.h" // mgr_stats, size_t, pid_t, NULL, sig_atomic_t
 
 #include <semaphore.h> // sem_t, sem_init
 #include <sys/mman.h>  // shm_open, PROT_READ, PROT_WRITE, MAP_SHARED,
@@ -6,7 +6,6 @@
 #include <fcntl.h>     // O_RDWR, O_CREAT, O_EXCL
 #include <sys/stat.h>  // S_IRUSR, S_IWUSR
 #include <unistd.h>    // ftruncate, close
-#include <signal.h>    // sig_atomic_t
 
 #define SH_MEM_NAME "/ios-p2-xstigl00"
 
@@ -24,6 +23,7 @@ typedef struct {
     mmq_fields q_fields[Q_COUNT];
     // atomic data
     sig_atomic_t closed;
+    sig_atomic_t active_clerks;
 } mmgr_memory;
 
 static mmgr_memory *mem;
@@ -107,6 +107,7 @@ static _Bool _mmgr_init(mmgr_stats *stats, size_t mem_size) {
     }
 
     mem->closed = 0;
+    mem->active_clerks = 0;
 
     return 1;
     // free the allocated resources on failure
@@ -191,4 +192,8 @@ _Bool mmgr_r_queue(int id) {
 
     sem_post(&mem->q_sem[id]);
     return 1;
+}
+
+sig_atomic_t *mmgr_a_active_clerks(void) {
+    return &mem->active_clerks;
 }

@@ -5,6 +5,7 @@
 
 #include <stdio.h>     // size_t, FILE
 #include <sys/types.h> // pid_t
+#include <signal.h>    // sig_atomic_t
 
 #include "mmgr_queue.h" // mmgr_queue
 
@@ -67,5 +68,8 @@ mmgr_queue mmgr_g_queue(int id);
 
 // unlocks queue with the given id, returns false if the id is invalid
 _Bool mmgr_r_queue(int id);
+
+// get the atomic variable with the number of active clerks
+sig_atomic_t *mmgr_a_active_clerks(void);
 
 #endif // MEM_MGR_INCLUDED

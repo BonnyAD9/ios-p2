@@ -6,7 +6,9 @@
 #include <time.h>      // time
 
 #include "logger.h"   // eprintf, init_log_file, close_log_file, wprintf
-#include "mem_mgr.h"  // mmgr_init, mmgr_close, pid_t
+#include "mem_mgr.h"  // mmgr_init, mmgr_close, pid_t, mmgr_g_queue,
+                      // mmgr_r_queue, mmgr_queue, kill, SIGUSR2,
+                      // mmgr_a_active_clerks
 #include "customer.h" // customer_main
 #include "clerk.h"    // clerk_main
 
@@ -123,6 +125,16 @@ on_fail:
     return EXIT_FAILURE;
 }
 
+static void send_customers_home(void) {
+    for (int i = 0; i < Q_COUNT; ++i) {
+        mmgr_queue q = mmgr_g_queue(i + 1);
+        pid_t pid;
+        while ((pid = mmq_pop(q)))
+            kill(pid, SIGUSR2);
+        mmgr_r_queue(i + 1);
+    }
+}
+
 static size_t wait4all_childern(void) {
     int wstatus = -1;
     size_t err_count = 0;
@@ -130,6 +142,10 @@ static size_t wait4all_childern(void) {
         // count the number of errors
         err_count +=
             WIFEXITED(wstatus) && WEXITSTATUS(wstatus) != EXIT_SUCCESS;
+
+        // if there are no active clerks, send all customers home
+        if (!*mmgr_a_active_clerks())
+            send_customers_home();
     }
 
     if (err_count)
