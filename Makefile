@@ -29,7 +29,7 @@ obj/debug/%.o: src/%.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 clean:
-	-rm obj/debug/*.o $(TARGET) dep.d
+	-rm obj/debug/*.o $(TARGET) dep.d $(SUBNAME).zip
 
 submit:
 	zip $(SUBNAME).zip Makefile src/*

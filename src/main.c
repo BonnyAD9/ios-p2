@@ -4,6 +4,7 @@
 #include <ctype.h>     // isspace
 #include <sys/wait.h>  // wait, WIFEXITED, WEXITSTATUS
 #include <time.h>      // time
+#include <string.h>
 
 #include "logger.h"   // eprintf, init_log_file, close_log_file, wprintf
 #include "mem_mgr.h"  // mmgr_init, mmgr_close, pid_t, mmgr_g_queue,
@@ -39,8 +40,9 @@ static size_t wait4all_childern(void);
 
 int main(int argc, char **argv) {
     // in case the process crashes this can be used to free the shared memory
-    if (argc == 1) {
+    if (argc == 2 && strcmp(argv[1], "--free-my-memory")) {
         mmgr_close(1);
+        wprintf("Memory freed, the following error is expected");
     }
     if (argc != 6)
         return eprintf("invalid number of arguments");
