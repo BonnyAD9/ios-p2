@@ -40,7 +40,7 @@ static size_t wait4all_childern(void);
 
 int main(int argc, char **argv) {
     // in case the process crashes this can be used to free the shared memory
-    if (argc == 2 && strcmp(argv[1], "--free-my-memory")) {
+    if (argc == 2 && strcmp(argv[1], "--free-my-memory") == 0) {
         mmgr_close(1);
         wprintf("Memory freed, the following error is expected");
     }
@@ -118,6 +118,9 @@ int main(int argc, char **argv) {
 
     // jump here on error, frees all resources and exits with failure
 on_fail:
+    // have the log correct even when there is error
+    mmgr_s_close();
+    flog("closing");
 
     wait4all_childern();
 
@@ -140,6 +143,14 @@ static void send_customers_home(void) {
 static size_t wait4all_childern(void) {
     int wstatus = -1;
     size_t err_count = 0;
+
+    sig_atomic_t ca = *mmgr_a_active_clerks();
+    // if there are no active clerks, send all customers home
+    // this usually happens when customer fork fails so there are no clerks
+    // at all
+    if (!ca)
+        send_customers_home();
+
     while (wait(&wstatus) != -1) {
         // count the number of errors
         err_count +=
